@@ -44,9 +44,11 @@ jobs:
           Get-Content "$env:TEMP\streamtv-selftest.txt"
           if ($p.ExitCode -ne 0) { throw "Selbsttest fehlgeschlagen (Exit-Code $($p.ExitCode))" }
 
-      - name: Anleitung beilegen
+      - name: Anleitung und Erweiterung beilegen
         shell: pwsh
-        run: Copy-Item README.md dist\StreamTV\ANLEITUNG.md
+        run: |
+          Copy-Item README.md dist\StreamTV\ANLEITUNG.md
+          Copy-Item extension dist\StreamTV\extension -Recurse
 
       - uses: actions/upload-artifact@v4
         with:

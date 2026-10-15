@@ -115,11 +115,12 @@ def build_mirror_cmd(
     ``"none"`` = ohne Ton.
     """
     cmd = [ffmpeg, "-hide_banner", "-loglevel", "warning"]
-    cmd += ["-thread_queue_size", "512", "-f", "gdigrab", "-framerate", str(fps), "-draw_mouse", "1", "-i", "desktop"]
+    # Kein -thread_queue_size: ffmpeg 8 lehnt die Option bei Eingängen ab.
+    cmd += ["-f", "gdigrab", "-framerate", str(fps), "-draw_mouse", "1", "-i", "desktop"]
     if audio == "pcm":
-        cmd += ["-thread_queue_size", "1024", "-f", "s16le", "-ar", "48000", "-ac", "2", "-i", "pipe:0"]
+        cmd += ["-f", "s16le", "-ar", "48000", "-ac", "2", "-i", "pipe:0"]
     elif audio == "dshow" and dshow_device:
-        cmd += ["-thread_queue_size", "1024", "-f", "dshow", "-i", f"audio={dshow_device}"]
+        cmd += ["-f", "dshow", "-i", f"audio={dshow_device}"]
     else:
         cmd += ["-nostdin"]
     has_audio = audio == "pcm" or (audio == "dshow" and bool(dshow_device))

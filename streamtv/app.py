@@ -67,7 +67,10 @@ def selftest() -> int:
         cmd = build_mirror_cmd(ffmpeg, fps=10)
         cmd = cmd[: cmd.index("-f", len(cmd) - 6)] + ["-t", "2", "-f", "null", "-"]
         r = subprocess.run(cmd, capture_output=True, timeout=60, **popen_kwargs())
-        print("Bildschirmaufnahme (gdigrab):", "OK" if r.returncode == 0 else r.stderr.decode(errors="replace")[-300:])
+        if r.returncode != 0:
+            print("FEHLER Bildschirmaufnahme (gdigrab):", r.stderr.decode(errors="replace")[-400:])
+            return 1
+        print("Bildschirmaufnahme (gdigrab): OK")
     print("Selbsttest erfolgreich.")
     return 0
 

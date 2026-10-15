@@ -359,6 +359,11 @@ def _resource(rel: str) -> Path:
 
 
 def _extension_folder() -> Path:
+    import sys
+
+    beside_exe = Path(sys.executable).parent / "extension"  # dort legt der Build sie gut sichtbar ab
+    if getattr(sys, "frozen", False) and beside_exe.exists():
+        return beside_exe
     return _resource("extension")
 
 

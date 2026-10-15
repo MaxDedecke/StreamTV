@@ -89,3 +89,17 @@ def test_remux_merges_separate_video_and_audio(sample_video, tmp_path):
     f.write_bytes(out)
     probe = subprocess.run([FFMPEG, "-hide_banner", "-i", str(f)], capture_output=True, text=True).stderr
     assert "Video: h264" in probe and "Audio: aac" in probe
+
+
+@needs_ffmpeg
+def test_mirror_encoding_options_are_accepted(tmp_path):
+    """Spiegel-Befehl mit Testbild statt gdigrab (gibt es nur unter Windows) und PCM über stdin."""
+    cmd = ff.build_mirror_cmd(FFMPEG, fps=10, audio="pcm")
+    i = cmd.index("gdigrab")
+    cmd[i - 1:i + 7] = ["-f", "lavfi", "-i", "testsrc=size=640x360:rate=10"]
+    cmd = cmd[: cmd.index("-f", len(cmd) - 6)] + ["-t", "1", "-f", "mpegts", str(tmp_path / "m.ts")]
+    pcm = b"\x00\x00" * 2 * 48000 * 2
+    r = subprocess.run(cmd, input=pcm, capture_output=True, timeout=60)
+    assert r.returncode == 0, r.stderr.decode()
+    probe = subprocess.run([FFMPEG, "-hide_banner", "-i", str(tmp_path / "m.ts")], capture_output=True, text=True).stderr
+    assert "Video: h264" in probe and "Audio: aac" in probe
