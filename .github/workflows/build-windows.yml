@@ -1,0 +1,65 @@
+name: Windows-Build
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # für Releases bei Tags
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Abhängigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: ffmpeg herunterladen
+        shell: pwsh
+        run: |
+          ./tools/get-ffmpeg.ps1
+          "$PWD\ffmpeg" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Tests
+        run: python -m pytest -q
+
+      - name: EXE bauen
+        run: pyinstaller --noconfirm StreamTV.spec
+
+      - name: Selbsttest der EXE
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist\StreamTV\StreamTV.exe -ArgumentList '--selftest' -Wait -PassThru
+          Get-Content "$env:TEMP\streamtv-selftest.txt"
+          if ($p.ExitCode -ne 0) { throw "Selbsttest fehlgeschlagen (Exit-Code $($p.ExitCode))" }
+
+      - name: Anleitung beilegen
+        shell: pwsh
+        run: Copy-Item README.md dist\StreamTV\ANLEITUNG.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StreamTV-Windows
+          path: dist/StreamTV
+
+      - name: ZIP für Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: Compress-Archive -Path dist\StreamTV -DestinationPath StreamTV-Windows.zip
+
+      - name: Release veröffentlichen
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: StreamTV-Windows.zip

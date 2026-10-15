@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "StreamTV – Auf den Fernseher",
+  "version": "0.1.0",
+  "description": "Erkennt Videos und Streams auf Webseiten und schickt sie an die StreamTV-App auf diesem PC.",
+  "permissions": ["webRequest", "storage", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "Auf dem Fernseher abspielen" },
+  "icons": { "128": "icon128.png" }
+}

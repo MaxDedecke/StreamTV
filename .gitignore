@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+ffmpeg/
+ffmpeg-tmp/
+ffmpeg.zip
+*.egg-info/
+.pytest_cache/

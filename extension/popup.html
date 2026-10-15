@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<style>
+  body { font: 13px "Segoe UI", system-ui, sans-serif; width: 360px; margin: 0; padding: 10px; background: #1b1b1f; color: #eee; }
+  h1 { font-size: 15px; margin: 0 0 8px; }
+  button { font: inherit; border: 0; border-radius: 6px; padding: 8px 10px; cursor: pointer; }
+  .main { width: 100%; background: #c4122f; color: #fff; font-weight: 600; margin-bottom: 10px; }
+  .main:hover { background: #e0173a; }
+  ul { list-style: none; padding: 0; margin: 0; max-height: 260px; overflow-y: auto; }
+  li { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid #333; }
+  li span.k { background: #333; border-radius: 4px; padding: 2px 6px; font-size: 11px; }
+  li span.u { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #bbb; }
+  li button { background: #2d6cdf; color: #fff; padding: 5px 8px; }
+  #msg { margin-top: 8px; min-height: 1.2em; color: #9fd29f; }
+  #msg.err { color: #f08a8a; }
+  .hint { color: #888; font-size: 12px; }
+</style>
+</head>
+<body>
+  <h1>📺 StreamTV</h1>
+  <button class="main" id="page">Diese Seite auf dem Fernseher abspielen</button>
+  <div class="hint" id="hint">Erkannte Streams auf dieser Seite (Video zuerst kurz starten):</div>
+  <ul id="list"></ul>
+  <div id="msg"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
